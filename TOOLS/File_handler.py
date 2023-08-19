@@ -177,7 +177,7 @@ class File_Handler:
             raise TypeError("this is not a csv file!!!!!!!!!!!!!!!")
 
     def Get_csv_files_from_web(self, url: str, encode: str | None = None) -> list[pd.DataFrame] | str:
-        "Get the contents of a `CSV` file as a table"
+        "Get the contents of a `CSV` tables or files online as a table"
         if url:
             try:
                 reader = pd.read_html(url, encoding=encode)
