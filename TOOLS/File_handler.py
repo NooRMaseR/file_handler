@@ -1,3 +1,4 @@
+import os
 import csv
 import cv2
 import json
@@ -60,6 +61,11 @@ class File_Handler:
             adding some data to `txt` file\n
             `replace: bool` if replace then replace all the content of `txt` file and add the new text
 
+    -----
+    bg_remover()
+    -----
+            removing the Background of the image
+            
     -----
     local_sql()
     -----
@@ -262,10 +268,14 @@ class File_Handler:
             
             self._image_path = image_path
             self._image_output_path = image_output_path + ".png"
-            
-            photo = cv2.imread(self._image_path)
-            self.__removed = rembg.remove(photo)
-            cv2.imwrite(self._image_output_path,self.__removed) # type: ignore
+            self.image_types: tuple = ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tif', '.tiff')
+            _ , extention = os.path.splitext(image_path)
+            if extention in self.image_types:
+                photo = cv2.imread(self._image_path)
+                self.__removed = rembg.remove(photo)
+                cv2.imwrite(self._image_output_path,self.__removed) # type: ignore
+            else:
+                raise TypeError("this is not an image")
             
         def return_image_as_pil(self,size:tuple[int,int] = (200,200)) -> PhotoImage:
             "return the removed image as PIL for UI like for using it on tkinter"
