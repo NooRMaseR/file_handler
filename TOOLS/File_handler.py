@@ -1,4 +1,5 @@
 import os
+import io
 import csv
 import cv2
 import json
@@ -108,12 +109,12 @@ class File_Handler:
         """
 
         def Save(text):
-            with open(self.__file, "w") as f:
+            with io.open(self.__file, "w") as f:
                 f.write(text)
             quit()
 
         if filename.endswith(".txt"):
-            with open(filename, "r") as f:
+            with io.open(filename, "r") as f:
                 self.__content = f.read()
             app = Tk()
             app.geometry("600x500")
@@ -144,7 +145,7 @@ class File_Handler:
     def Get_contents_from_json(self, file_path: str) -> dict:
         "Get the contents of a `JSON` file"
         if file_path.endswith(".json"):
-            with open(file_path, "r") as f:
+            with io.open(file_path, "r") as f:
                 self.__content = json.load(f)
             return self.__content
         else:
@@ -153,7 +154,7 @@ class File_Handler:
     def Get_csv_content_as_list(self, file_path: str) -> list:
         "Get the contents of a `CSV` file as a `list` of `dict`"
         if file_path.endswith(".csv"):
-            with open(file_path, "r", encoding="utf-8") as f:
+            with io.open(file_path, "r", encoding="utf-8") as f:
                 reader = csv.DictReader(f)
                 items = list(reader)
             return items
@@ -163,11 +164,18 @@ class File_Handler:
     def Get_csv_content_as_table(self, file_path: str) -> pd.DataFrame:
         """
         Get the contents of a `CSV` file as a table\n
-        you can get a Spicific table, for Examble
-        >>> db = File_Handler()
-        >>> file = db.Get_file_path()
-        >>> content = db.Get_csv_content_as_table(file)
-        >>> print(content["Email"])
+        >>> csv_file = File_Handler()
+        >>> file = csv_file.Get_file_path()
+        >>> content = csv_file.Get_csv_content_as_table(file)
+        >>> print(content)\n
+        ---
+        you can rename any row using `rename()`
+        >>> renamed_row = content.rename(columns= {"row to replace":"replace with"})
+        >>> print(renamed_raw)\n
+        ---
+        you can get any raw by slicing it\n
+        for examble
+        >>> print(renamed_raw['Email'])
  
         """
         if file_path.endswith(".csv"):
@@ -175,9 +183,31 @@ class File_Handler:
             return reader
         else:
             raise TypeError("this is not a csv file!!!!!!!!!!!!!!!")
+        
+    
+    def Get_web_csv_file(self, url: str, encoding:str = "utf-8") -> pd.DataFrame:
+        """
+        Get the contents of a `CSV` file from internet\n
+        >>> db = File_Handler()
+        >>> content = db.Get_web_csv_file(file)
+        >>> print(content)\n
+        ---
+        you can rename any row using `rename()`
+        >>> renamed_row = content.rename(columns= {"row to replace":"replace with"})
+        >>> print(renamed_raw)\n
+        ---
+        you can get any raw by slicing it\n
+        for examble
+        >>> print(renamed_raw['ID'])
+        """
+        try:
+            reader = pd.read_csv(url, encoding=encoding)
+            return reader
+        except:
+            raise Exception("failed to get the csv file online")
 
-    def Get_csv_files_from_web(self, url: str, encode: str | None = None) -> list[pd.DataFrame] | str:
-        "Get the contents of a `CSV` tables or files online as a table"
+    def Get_tables_from_web(self, url: str, encode: str | None = None) -> list[pd.DataFrame] | str:
+        "Get the tables or csv files online"
         if url:
             try:
                 reader = pd.read_html(url, encoding=encode)
@@ -188,17 +218,24 @@ class File_Handler:
             except:
                 raise TypeError("This url is Not currect please make sure to copy the same url that contain the tables.")
         else:
-            raise TypeError("url cannot be empty!!!!!")
+            raise Exception("url cannot be empty!!!!!")
 
     def Get_excel_content(self, file_path: str) -> pd.DataFrame:
         """Get the contents of `Excel` file\n
-        you can get any spicefic column, for Examble
         >>> db = File_Handler()
         >>> file = db.Get_file_path()
         >>> content = db.Get_excel_content(file)
-        >>> print(content["Name"])
+        >>> print(content)\n
+        ---
+        you can rename any row using `rename()`
+        >>> renamed_row = content.rename(columns= {"row to replace":"replace with"})
+        >>> print(renamed_raw)\n
+        ---
+        you can get any raw by slicing it\n
+        for examble
+        >>> print(renamed_raw['ID'])
         """
-        if file_path.endswith(".xlsx"):
+        if file_path.endswith(".xlsx" or "xls"):
             reader = pd.read_excel(file_path)
             return reader
         else:
@@ -207,7 +244,7 @@ class File_Handler:
     def Get_text_from_txt(self, file_path: str) -> str:
         "Get the contents of a `txt` file"
         if file_path.endswith(".txt"):
-            with open(file_path, "r") as f:
+            with io.open(file_path, "r") as f:
                 self.__content = f.read()
             return self.__content
         else:
@@ -224,7 +261,7 @@ class File_Handler:
         """
         assert indentation >= 0, "can not add negative indentation"
         if filename.endswith(".json"):
-            with open(filename, "w") as f:
+            with io.open(filename, "w") as f:
                 json.dump(text, f, indent=indentation)
         else:
             raise TypeError("this is not a json file !!!!!!!!!!!!!!!")
@@ -236,10 +273,10 @@ class File_Handler:
         """
         if file_path.endswith(".text"):
             if replace:
-                with open(file_path, "w") as f:
+                with io.open(file_path, "w") as f:
                     f.write(text_to_add)
             else:
-                with open(file_path, "a") as f:
+                with io.open(file_path, "a") as f:
                     f.write(text_to_add)
         else:
             raise TypeError("this is not a text file !!!!!!!!!!!!!!!")
@@ -268,14 +305,15 @@ class File_Handler:
             
             self._image_path = image_path
             self._image_output_path = image_output_path + ".png"
-            self_.image_types: tuple = ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tif', '.tiff')
+            self._image_types: tuple = ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tif', '.tiff')
             _ , extention = os.path.splitext(image_path)
             if extention in self._image_types:
                 photo = cv2.imread(self._image_path)
+                print("Please wait while removing the Background")
                 self.__removed = rembg.remove(photo)
                 cv2.imwrite(self._image_output_path,self.__removed) # type: ignore
             else:
-                raise TypeError("this is not an image")
+                raise TypeError(f"Extention {extention} is unrecognized, this is not an image")
             
         def return_image_as_pil(self,size:tuple[int,int] = (200,200)) -> PhotoImage:
             "return the removed image as PIL for UI like for using it on tkinter"
