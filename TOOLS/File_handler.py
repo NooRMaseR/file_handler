@@ -394,7 +394,6 @@ class File_Handler:
                             c.execute(f"PRAGMA table_info({table})")
                             connect.commit()
                             result = c.fetchall()
-                            print(result)
                             if k == result[count][1]:
                                 print(f"{k} is already exist")
                             count += 1
