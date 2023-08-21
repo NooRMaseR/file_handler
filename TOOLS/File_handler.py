@@ -524,14 +524,14 @@ class File_Handler:
     def isinteger(num) :
         if isinstance(num, int):
             return True
-        elif isinstance(num, float):
+        else:
             return False
 
     @staticmethod
     def isfloat(num):
         if isinstance(num, float):
             return True
-        elif isinstance(num, int):
+        else:
             return False
 
     @staticmethod
