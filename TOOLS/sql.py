@@ -2,12 +2,12 @@ import sqlite3
 
 
 class local_sql:
-    """creates a local db file
+    """create a local db file with lower and easy code
 
     create_db_with_columns()
     -----
             CREATE TABLE IF NOT EXISTS 'table'
-            >>> from TOOLS.File_Handler import local_sql
+            >>> from TOOLS.sql import local_sql
             >>> db = local_sql()
             >>> db.create_db_with_columns(dbname="test.db",table="ppl", {"FIRST_NAME": "TEXT"},{"SECOND_NAME": "TEXT"},{"AGE": "INTEGER"}, {"place": "TEXT"},{"country": "TEXT"})"
 
@@ -15,24 +15,27 @@ class local_sql:
     insert_into_db()
     -----
             INSERT INTO 'table' VALUES (args)
-            >>> from TOOLS.File_Handler import local_sql
+            >>> from TOOLS.sql import local_sql
             >>> db = local_sql()
             >>> db.insert_into_db(dbfilename="dbfilename.db", table="table", {'name': 'type'}, {'name': 'type'})
 
     -----
     find_into_db()
     -----
-            SELECT * FROM 'table' WHERE {command}
-            >>> from TOOLS.File_Handler import local_sql
+            SELECT * FROM 'table' 'where'
+            >>> from TOOLS.sql import local_sql
             >>> db = local_sql()
-            >>> print(db.find_into_db(dbfilename="dbfilename.db", table="table", command="first_name='NOOR'"))
-            >>> print(db.find_into_db(dbfilename="dbfilename.db", table="table", command="name='NooR' AND second_name='MaseR' AND email='NOOR@example.com'"))
+            # like=False meens first_name ='NOOR'
+            >>> db.find_into_db(dbfilename="dbfilename.db", table="table", like=False, first_name='NOOR')
+            >>> db.find_into_db(dbfilename="dbfilename.db", table="table", like=False, name='NooR' , second_name='MaseR' , email='NOOR@example.com')
+            # like=True meens first_name like'NOOR'
+            >>> db.find_into_db(dbfilename="dbfilename.db", table="table", like=True, name='NooR' , second_name='MaseR' , email='NOOR@example.com')
 
     -----
     find_one_into_db()
     -----
             SELECT 'column_name' FROM 'table' WHERE {where}
-            >>> from TOOLS.File_Handler import local_sql
+            >>> from TOOLS.sql import local_sql
             >>> db = local_sql()
             >>> print(db.find_one_into_db(dbfilename="dbfilename.db", table="table", column_name="owner", where="first_name='NOOR'"))
             >>> print(db.find_one_into_db(dbfilename="dbfilename.db", table="table", column_name="owner", where="email='NOOR@example.com' AND place='EGYPT'"))
@@ -41,7 +44,7 @@ class local_sql:
     Get_db_data()
     -----
             SELECT * FROM 'table'
-            >>> from TOOLS.File_Handler import local_sql
+            >>> from TOOLS.sql import local_sql
             >>> db = local_sql()
             >>> print(db.Get_db_data("dbfilename=dbfilename.db", table="table"))
 
@@ -49,9 +52,17 @@ class local_sql:
     Update_db_data()
     -----
             SELECT * FROM 'table'
-            >>> from TOOLS.File_Handler import local_sql
+            >>> from TOOLS.sql import local_sql
             >>> db = local_sql()
-            >>> db.Update_db_data(dbfilename="dbfilename.db", table="table", update_command="Name='ali', email='MaseR@example.org', phone='20*********'", where="ID='**********' AND country='EGYPT'")
+            >>> db.Update_db_data(dbfilename="dbfilename.db", table="table", set_command=({"Name":'ali'}, {"email":'MaseR@example.org'}), {"phone":'20*********'}), ID='**********' , country='EGYPT')
+    
+    -----
+    Delete_from_db()
+    -----
+            DELETE FROM 'table' WHERE
+            >>> from TOOLS.sql import local_sql
+            >>> db = local_sql()
+            >>> db.Delete_from_db(dbfilename="dbfilename.db", table="table", EMAIL='exam@example.or' , PASSWORD ='123456789' , PHONE='+1*******')
     """
 
     def __init__(self) -> None:
@@ -60,7 +71,7 @@ class local_sql:
     def create_db_with_columns(self, dbfilename: str, table: str, *args: dict) -> None:
         """
         CREATE TABLE IF NOT EXISTS 'table'
-        >>> from TOOLS.File_Handler import local_sql
+        >>> from TOOLS.sql import local_sql
         >>> db = local_sql()
         >>> db.create_db_with_columns(dbfilename="test.db",table="ppl", {"FIRST_NAME": "TEXT"},{"SECOND_NAME": "TEXT"},{"AGE": "INTEGER"}, {"place": "TEXT"},{"country": "TEXT"})
         """
@@ -88,11 +99,9 @@ class local_sql:
                         c.execute(f"PRAGMA table_info({table})")
                         connect.commit()
                         result = c.fetchall()
-                        print(result)
                         if k == result[count][1]:
                             print(f"{k} is already exist")
                         count += 1
-                        # print(result)
                     except:
                         for k, v in i.items():
                             c.execute(f"PRAGMA table_info({table})")
@@ -108,12 +117,10 @@ class local_sql:
         else:
             raise TypeError(f"the [{dbfilename}] does not end with .db Extention")
 
-    def insert_into_db(
-        self, dbfilename: str, table: str, *args: str | int | float
-    ) -> None:
+    def insert_into_db(self, dbfilename: str, table: str, *args: str | int | float) -> None:
         """
         INSERT INTO 'table' VALUES (args)
-        >>> from TOOLS.File_Handler import local_sql
+        >>> from TOOLS.sql import local_sql
         >>> db = local_sql()
         >>> db.insert_into_db(dbfilename="dbfilename.db", table="table", 'NooR', "MaseR", 'EGYPT')
         """
@@ -129,33 +136,40 @@ class local_sql:
         else:
             raise TypeError(f"the [{dbfilename}] does not end with .db Extention")
 
-    def find_into_db(self, dbfilename: str, table: str, where: str) -> list:
+    def find_into_db(self, dbfilename: str, table: str, like:bool = False, **where) -> list:
         """
-        SELECT * FROM 'table' WHERE {where}
-        >>> from TOOLS.File_Handler import local_sql
+        SELECT * FROM 'table' 'where'
+        >>> from TOOLS.sql import local_sql
         >>> db = local_sql()
-        >>> db.find_into_db(dbfilename="dbfilename.db", table="table", where="first_name='NOOR'")
-        >>> db.find_into_db(dbfilename="dbfilename.db", table="table", where="name='NooR' AND second_name='MaseR' AND email='NOOR@example.com'")
-        >>> db.find_into_db(dbfilename="dbfilename.db", table="table", where="name like'NooR' AND second_name like 'MaseR' AND email like 'NOOR@example.com'")
+        # like=False meens first_name ='NOOR'
+        >>> db.find_into_db(dbfilename="dbfilename.db", table="table", like=False, first_name='NOOR')
+        >>> db.find_into_db(dbfilename="dbfilename.db", table="table", like=False, name='NooR' , second_name='MaseR' , email='NOOR@example.com')
+        # like=True meens first_name like'NOOR'
+        >>> db.find_into_db(dbfilename="dbfilename.db", table="table", like=True, name='NooR' , second_name='MaseR' , email='NOOR@example.com')
         """
         if dbfilename.endswith(".db"):
+            query:str = "WHERE "
             connect = sqlite3.connect(f"{dbfilename}")
             c = connect.cursor()
-            c.execute(f"SELECT * FROM '{table}' WHERE {where}")
+            for k,v in where.items():
+                if like:
+                    query += f"{k} like'{v}' AND "
+                else:
+                    query += f"{k}='{v}' AND "
+            query = query.removesuffix(" AND ")
+            c.execute(f"SELECT * FROM '{table}' {query}")
             result = c.fetchall()
             connect.commit()
             connect.close()
-            self._sql_command = f"SELECT * FROM '{table}' WHERE {where}"
+            self._sql_command = f"SELECT * FROM '{table}' {query}"
             return result
         else:
             raise TypeError(f"the [{dbfilename}] does not end with .db Extention")
 
-    def find_col_into_db(
-        self, dbfilename: str, table: str, column_name: str, command: str
-    ) -> list:
+    def find_col_into_db(self, dbfilename: str, table: str, column_name: str, command: str) -> list:
         """
-        SELECT 'column_name' FROM 'table' WHERE {command}
-        >>> from TOOLS.File_Handler import local_sql
+        SELECT 'column_name' FROM 'table' WHERE 'command'
+        >>> from TOOLS.sql import local_sql
         >>> db = local_sql()
         >>> db.find_one_into_db(dbfilename="dbfilename.db", table="table", column_name="owner", command="first_name='NOOR'")
         >>> db.find_one_into_db(dbfilename="dbfilename.db", table="table", column_name="owner", command="email='NOOR@example.com' AND place='EGYPT'")
@@ -175,7 +189,7 @@ class local_sql:
     def Get_db_data(self, dbfilename: str, table: str) -> list:
         """
         SELECT * FROM 'table'
-        >>> from TOOLS.File_Handler import local_sql
+        >>> from TOOLS.sql import local_sql
         >>> db = local_sql()
         >>> print(db.Get_db_data(dbfilename="dbfilename.db", table="table"))
         """
@@ -191,38 +205,50 @@ class local_sql:
         else:
             raise TypeError(f"the [{dbfilename}] does not end with .db Extention")
 
-    def Update_db_data(
-        self, dbfilename: str, table: str, update_command: str, where: str
-    ) -> None:
+    def Update_db_data(self, dbfilename: str, table: str, set_command: tuple | list, **where) -> None:
         """
         SELECT * FROM 'table'
-        >>> from TOOLS.File_Handler import local_sql
+        >>> from TOOLS.sql import local_sql
         >>> db = local_sql()
-        >>> db.Update_db_data(dbfilename="dbfilename.db", table="table", update_command="Name='ali', email='MaseR@example.org', phone='20*********'", where="ID='**********' AND country='EGYPT'")
+        >>> db.Update_db_data(dbfilename="dbfilename.db", table="table", set_command=({"Name":'ali'}, {"email":'MaseR@example.org'}), {"phone":'20*********'}), ID='**********' , country='EGYPT')
         """
         if dbfilename.endswith(".db"):
+            where_query:str = "WHERE "
+            where_update:str = "SET  "
             connect = sqlite3.connect(f"{dbfilename}")
             c = connect.cursor()
-            c.execute(f"UPDATE '{table}' SET {update_command} WHERE {where}")
+            for i in set_command:
+                for k,v in i.items():
+                    where_update += f"{k}='{v}', "
+            where_update = where_update.removesuffix(", ")
+                
+            for k,v in where.items():
+                where_query += f"{k}='{v}' AND "
+            where_query = where_query.removesuffix(" AND ")
+            c.execute(f"UPDATE '{table}' {set_command} {where_query}")
             connect.commit()
             connect.close()
-            self._sql_command = f"UPDATE '{table}' SET {update_command} WHERE {where}"
+            self._sql_command = f"UPDATE '{table}' {set_command} {where_query}"
         else:
             raise TypeError(f"the [{dbfilename}] does not end with .db Extention")
 
-    def Delete_from_db(self, dbfilename: str, table: str, where: str):
+    def Delete_from_db(self, dbfilename: str, table: str, **where) -> None:
         """
         DELETE FROM 'table' WHERE
-        >>> from TOOLS.File_Handler import local_sql
+        >>> from TOOLS.sql import local_sql
         >>> db = local_sql()
-        >>> db.Delete_from_db(dbfilename="dbfilename.db", table="table", where="EMAIL='exam@example.or' AND PASSWORD ='123456789' AND PHONE='+1*******")
+        >>> db.Delete_from_db(dbfilename="dbfilename.db", table="table", EMAIL='exam@example.or' , PASSWORD ='123456789' , PHONE='+1*******')
         """
         if dbfilename.endswith(".db"):
+            query:str = "WHERE "
             connect = sqlite3.connect(f"{dbfilename}")
             c = connect.cursor()
-            c.execute(f"DELETE FROM '{table}' WHERE {where}")
+            for k,v in where.items():
+                query += f"{k}='{v}' AND "
+            query = query.removesuffix(" AND ")
+            c.execute(f"DELETE FROM '{table}' {query}")
             connect.commit()
             connect.close()
-            self._sql_command = f"DELETE FROM '{table}' WHERE {where}"
+            self._sql_command = f"DELETE FROM '{table}' {query}"
         else:
             raise TypeError(f"the [{dbfilename}] does not end with .db Extention")

@@ -1,9 +1,9 @@
 import os
 import io
 import csv
-import cv2
+# import cv2
 import json
-import rembg
+# import rembg #! can't import because it's not suported in python3.12
 import pandas as pd
 from tkinter import Tk, Frame, mainloop, PhotoImage, END, ttk , filedialog
 from customtkinter import CTkFont, CTkTextbox
@@ -311,53 +311,53 @@ class File_Handler:
         else:
             raise TypeError("this is not a text file !!!!!!!!!!!!!!!")
 
+#? ==========================SOON==========================
+# class bg_remover:
+#     """
+#     removes the Background from the image\n
+#     `image_path` the path to the image to remove\n
+#     `image_output_path` the path followed by the file name without Extention for saving
 
-class bg_remover:
-    """
-    removes the Background from the image\n
-    `image_path` the path to the image to remove\n
-    `image_output_path` the path followed by the file name without Extention for saving
+#     -----
+#     Examble
+#     -----
+#             >>> from TOOLS.File_Handler import bg_remover
+#                 path = 'path/to/image'
+#                 image_remover = bg_remover(image_path = path, image_output_path = "path/for/saving/removed/image/image name")\n
+#                 if you want to return the image as PIL you can use `return_image_as_pil()`\n
+#                 >>> photo = image_remover.return_image_as_pil()\n
+#                 if you want the path of the output or input you can use:
+#                 >>> print(image_remover._image_output_path)
+#                 >>> print(image_remover._image_output_name)
+#                 >>> print(image_remover._image_path)
+#     """
 
-    -----
-    Examble
-    -----
-            >>> from TOOLS.File_Handler import bg_remover
-                path = 'path/to/image'
-                image_remover = bg_remover(image_path = path, image_output_path = "path/for/saving/removed/image/image name")\n
-                if you want to return the image as PIL you can use `return_image_as_pil()`\n
-                >>> photo = image_remover.return_image_as_pil()\n
-                if you want the path of the output or input you can use:
-                >>> print(image_remover._image_output_path)
-                >>> print(image_remover._image_output_name)
-                >>> print(image_remover._image_path)
-    """
+#     def __init__(self, image_path: str, image_output_path: str) -> None:
+#         self._image_path = image_path
+#         self._image_output_path = image_output_path + ".png"
+#         self._image_types: tuple = (
+#             ".jpg",
+#             ".jpeg",
+#             ".png",
+#             ".gif",
+#             ".bmp",
+#             ".tif",
+#             ".tiff",
+#         )
+#         _, extention = os.path.splitext(image_path)
+#         if extention in self._image_types:
+#             photo = cv2.imread(self._image_path)
+#             print("Please wait while removing the Background")
+#             self.__removed = rembg.remove(photo)
+#             cv2.imwrite(self._image_output_path, self.__removed)  # type: ignore
+#         else:
+#             raise TypeError(
+#                 f"Extention {extention} is unrecognized, this is not an image"
+#             )
 
-    def __init__(self, image_path: str, image_output_path: str) -> None:
-        self._image_path = image_path
-        self._image_output_path = image_output_path + ".png"
-        self._image_types: tuple = (
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".gif",
-            ".bmp",
-            ".tif",
-            ".tiff",
-        )
-        _, extention = os.path.splitext(image_path)
-        if extention in self._image_types:
-            photo = cv2.imread(self._image_path)
-            print("Please wait while removing the Background")
-            self.__removed = rembg.remove(photo)
-            cv2.imwrite(self._image_output_path, self.__removed)  # type: ignore
-        else:
-            raise TypeError(
-                f"Extention {extention} is unrecognized, this is not an image"
-            )
-
-    def return_image_as_pil(self, size: tuple[int, int] = (200, 200)) -> PhotoImage:
-        "return the removed image as PIL for UI like for using it on tkinter"
-        return ImageTk.PhotoImage(Image.open(self._image_output_path).resize(size))  # type: ignore
+#     def return_image_as_pil(self, size: tuple[int, int] = (200, 200)) -> PhotoImage:
+#         "return the removed image as PIL for UI like for using it on tkinter"
+#         return ImageTk.PhotoImage(Image.open(self._image_output_path).resize(size))  # type: ignore
 
 
 
