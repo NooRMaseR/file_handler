@@ -9,5 +9,6 @@ this module allows you to interact with files
 you can read and write files
 ## local_sql()
 this module allows you to interact with SQLite3 easily
+#SOON
 ## bg_remover()
 this module allows you to remove the background from almost any image automatically 
