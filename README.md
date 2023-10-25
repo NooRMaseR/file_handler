@@ -11,5 +11,5 @@ you can read and write files
 this module allows you to interact with SQLite3 easily
 #SOON
 ## bg_remover()
-<h3 style="color:'blue';">not supported in python3.12</h3>
+<h3 style="color:'red';">not supported in python3.12</h3>
 this module allows you to remove the background from almost any image automatically 
