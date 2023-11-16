@@ -68,6 +68,24 @@ class local_sql:
     def __init__(self) -> None:
         self._sql_command: str
 
+    def create_table_if_not(self, dbfilename: str, table: str, *args: dict) -> None:
+        "CREATE TABLE IF NOT EXISTS 'table'"
+        creation:str = f"CREATE TABLE IF NOT EXISTS {table} ("
+        for i in args:
+            creation += f"{list(i.keys())[0]} {list(i.values())[0].upper()}, "
+        creation = creation.removesuffix(", ")
+        creation += ")"
+        print(f"{creation = }")
+        if dbfilename.endswith(".db"):
+            try:
+                conn = sqlite3.connect(dbfilename)
+                c = conn.cursor()
+                c.execute(creation)
+                conn.commit()
+                conn.close()
+            except Exception as e:
+                raise Exception(e)
+    
     def create_db_with_columns(self, dbfilename: str, table: str, *args: dict) -> None:
         """
         CREATE TABLE IF NOT EXISTS 'table'
@@ -100,7 +118,8 @@ class local_sql:
                         connect.commit()
                         result = c.fetchall()
                         if k == result[count][1]:
-                            print(f"{k} is already exist")
+                            pass
+                            # print(f"{k} is already exist")
                         count += 1
                     except:
                         for k, v in i.items():
@@ -117,7 +136,7 @@ class local_sql:
         else:
             raise TypeError(f"the [{dbfilename}] does not end with .db Extention")
 
-    def insert_into_db(self, dbfilename: str, table: str, *args: str | int | float) -> None:
+    def insert_into_db(self, dbfilename: str, table: str, *args: str | int | float | bytes) -> None:
         """
         INSERT INTO 'table' VALUES (args)
         >>> from TOOLS.sql import local_sql
@@ -127,12 +146,12 @@ class local_sql:
         if dbfilename.endswith(".db"):
             connect = sqlite3.connect(f"{dbfilename}")
             c = connect.cursor()
-            insert = f"INSERT INTO '{table}' VALUES"
             data = tuple(data for data in args)
-            c.execute(f"{insert}{data}")
+            insert = f"INSERT INTO '{table}' VALUES ({"?," * len(data)})".replace(",)",")")
+            self._sql_command = f"{insert}{data}"
+            c.execute(f"{insert}",data)
             connect.commit()
             connect.close()
-            self._sql_command = f"{insert}{data}"
         else:
             raise TypeError(f"the [{dbfilename}] does not end with .db Extention")
 
@@ -207,10 +226,10 @@ class local_sql:
 
     def Update_db_data(self, dbfilename: str, table: str, set_command: tuple | list, **where) -> None:
         """
-        SELECT * FROM 'table'
+        Update 'table' 'set_command' **where
         >>> from TOOLS.sql import local_sql
         >>> db = local_sql()
-        >>> db.Update_db_data(dbfilename="dbfilename.db", table="table", set_command=({"Name":'ali'}, {"email":'MaseR@example.org'}), {"phone":'20*********'}), ID='**********' , country='EGYPT')
+        >>> db.Update_db_data(dbfilename="dbfilename.db", table="table", set_command=({"Name":'ali'}, {"email":'MaseR@example.org'}, {"phone":'20*********'}), ID='**********' , country='EGYPT')
         """
         if dbfilename.endswith(".db"):
             where_query:str = "WHERE "
@@ -225,10 +244,10 @@ class local_sql:
             for k,v in where.items():
                 where_query += f"{k}='{v}' AND "
             where_query = where_query.removesuffix(" AND ")
-            c.execute(f"UPDATE '{table}' {set_command} {where_query}")
+            self._sql_command = f"UPDATE '{table}' {where_update} {where_query}"
+            c.execute(f"UPDATE '{table}' {where_update} {where_query}")
             connect.commit()
             connect.close()
-            self._sql_command = f"UPDATE '{table}' {set_command} {where_query}"
         else:
             raise TypeError(f"the [{dbfilename}] does not end with .db Extention")
 

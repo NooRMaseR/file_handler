@@ -15,7 +15,8 @@ class Enhance_Tkinter():
         ----
         that's it !!!\n
         now you don't need to type tenth of codes anymore\n
-        only 2 lines of code
+        only 2 lines of code\n
+        minimaize is not supported for now
         """
         def __init__(
             self,
@@ -51,16 +52,16 @@ class Enhance_Tkinter():
             color_fullScreen_on_click_bg: str = "blue",
             color_fullScreen_on_click_fg: str = "white",
             
-            minimizeScreen_default_text:str = "-",
-            minimizeScreen_default_icon:PhotoImage | None = None,
-            color_minimizeScreen_defualt_bg: str = "systembuttonface",
-            color_minimizeScreen_defualt_fg: str = "black",
-            color_minimizeScreen_on_enter_bg: str = "blue",
-            color_minimizeScreen_on_enter_fg: str = "white",
-            color_minimizeScreen_on_leave_bg: str = "systembuttonface",
-            color_minimizeScreen_on_leave_fg: str = "black",
-            color_minimizeScreen_on_click_bg: str = "blue",
-            color_minimizeScreen_on_click_fg: str = "white",
+            # minimizeScreen_default_text:str = "-",
+            # minimizeScreen_default_icon:PhotoImage | None = None,
+            # color_minimizeScreen_defualt_bg: str = "systembuttonface",
+            # color_minimizeScreen_defualt_fg: str = "black",
+            # color_minimizeScreen_on_enter_bg: str = "blue",
+            # color_minimizeScreen_on_enter_fg: str = "white",
+            # color_minimizeScreen_on_leave_bg: str = "systembuttonface",
+            # color_minimizeScreen_on_leave_fg: str = "black",
+            # color_minimizeScreen_on_click_bg: str = "blue",
+            # color_minimizeScreen_on_click_fg: str = "white",
             ) -> None:
 
             self.parent = parent
@@ -93,16 +94,16 @@ class Enhance_Tkinter():
             self.color_fullScreen_on_click_bg = color_fullScreen_on_click_bg
             self.color_fullScreen_on_click_fg = color_fullScreen_on_click_fg
             
-            self.minimizeScreen_default_text = minimizeScreen_default_text
-            self.minimizeScreen_default_icon = minimizeScreen_default_icon
-            self.color_minimizeScreen_defualt_bg = color_minimizeScreen_defualt_bg
-            self.color_minimizeScreen_defualt_fg = color_minimizeScreen_defualt_fg
-            self.color_minimizeScreen_on_enter_bg = color_minimizeScreen_on_enter_bg
-            self.color_minimizeScreen_on_enter_fg = color_minimizeScreen_on_enter_fg
-            self.color_minimizeScreen_on_leave_bg = color_minimizeScreen_on_leave_bg
-            self.color_minimizeScreen_on_leave_fg = color_minimizeScreen_on_leave_fg
-            self.color_minimizeScreen_on_click_bg = color_minimizeScreen_on_click_bg
-            self.color_minimizeScreen_on_click_fg = color_minimizeScreen_on_click_fg
+            # self.minimizeScreen_default_text = minimizeScreen_default_text
+            # self.minimizeScreen_default_icon = minimizeScreen_default_icon
+            # self.color_minimizeScreen_defualt_bg = color_minimizeScreen_defualt_bg
+            # self.color_minimizeScreen_defualt_fg = color_minimizeScreen_defualt_fg
+            # self.color_minimizeScreen_on_enter_bg = color_minimizeScreen_on_enter_bg
+            # self.color_minimizeScreen_on_enter_fg = color_minimizeScreen_on_enter_fg
+            # self.color_minimizeScreen_on_leave_bg = color_minimizeScreen_on_leave_bg
+            # self.color_minimizeScreen_on_leave_fg = color_minimizeScreen_on_leave_fg
+            # self.color_minimizeScreen_on_click_bg = color_minimizeScreen_on_click_bg
+            # self.color_minimizeScreen_on_click_fg = color_minimizeScreen_on_click_fg
         
             
             def __move_window(e) -> None:
@@ -209,7 +210,29 @@ class Enhance_Tkinter():
             self.frame.bind("<B1-Motion>", __move_window)
             
         def Set_title(self,**kwargs) -> None:
+            """
+            Change the title attributes (Text)\n
+            treat it as Label
+            """
             self.label.configure(**kwargs)
             
         def Set_bg(self,**kwargs) -> None:
+            """
+            Change the bar attributes\n
+            treat it as a Frame
+            """
             self.frame.configure(**kwargs)
+        
+        def Set_exit_button(self,**kwargs) -> None:
+            """
+            Change the exit button attributes\n
+            treat it as a Button
+            """
+            self.exit_button.configure(**kwargs)
+        
+        def Set_fullscreen_button(self,**kwargs) -> None:
+            """
+            Change the fullscreen button attributes\n
+            treat it as a Button
+            """
+            self.fullScreen_button.configure(**kwargs)
