@@ -11,6 +11,6 @@ you can read and write files
 this module allows you to interact with SQLite3 easily
 
 ## SOON
-## bg_remover()
+### bg_remover()
 <p style="color:'red'; text-size:20;">not supported in python3.12</p>
 this module allows you to remove the background from almost any image automatically 
